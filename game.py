@@ -4,7 +4,7 @@ import time
 
 import config
 
-from background import Background
+from background.background import Background
 from player import Player
 from hazard import Hazard
 
