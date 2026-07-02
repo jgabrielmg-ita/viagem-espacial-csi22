@@ -1,4 +1,4 @@
-from game import Game
+from game.game import Game
 
 def main():
     # Cria o objeto game e chama o loop básico
