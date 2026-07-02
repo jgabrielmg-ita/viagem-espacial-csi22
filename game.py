@@ -2,7 +2,7 @@ import pygame
 import random
 import time
 
-import config
+import config.config as config
 
 from background.background import Background
 from player_hazard.player import Player
