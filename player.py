@@ -1,5 +1,6 @@
 import pygame
 
+import config
 
 class Player:
     """
@@ -10,9 +11,9 @@ class Player:
     y = None
 
     def __init__(self, x, y):
-        player_fig = pygame.image.load("Images/player.png")
+        player_fig = pygame.image.load(config.IMG_PLAYER)
         player_fig.convert()
-        player_fig = pygame.transform.scale(player_fig, (90, 90))
+        player_fig = pygame.transform.scale(player_fig, (config.TAM_PLAYER, config.TAM_PLAYER))
         self.image = player_fig
         self.x = x
         self.y = y
