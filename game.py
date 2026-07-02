@@ -2,6 +2,8 @@ import pygame
 import random
 import time
 
+import config
+
 from background import Background
 from player import Player
 from hazard import Hazard
@@ -10,8 +12,8 @@ from hazard import Hazard
 class Game:
     screen = None
     screen_size = None
-    width = 800
-    height = 600
+    width = config.LARGURA_TELA
+    height = config.ALTURA_TELA
     run = True
     background = None
     player = None
@@ -38,14 +40,14 @@ class Game:
         self.screen_size = self.screen.get_size()
 
         pygame.mouse.set_visible(0)
-        pygame.display.set_caption('Viagem Espacial')
+        pygame.display.set_caption(config.TITULO_JANELA)
 
         # fontes
-        my_font = pygame.font.Font("Fonts/Fonte4.ttf", 100)
+        my_font = pygame.font.Font(config.FONTE_TITULO, config.TAM_FONTE_TITULO)
 
         # Mensagens para o jogador
-        self.render_text_bateulateral = my_font.render("COLISÃO!", 0,(255, 255, 255))  # ("texto", opaco/transparente 0/1, cor do texto)
-        self.render_text_perdeu = my_font.render("GAME OVER!", 0, (255, 0, 0))  # ("texto, opaco/transparente 0/1, cor do texto)
+        self.render_text_bateulateral = my_font.render("COLISÃO!", 0,config.BRANCO)  # ("texto", opaco/transparente 0/1, cor do texto)
+        self.render_text_perdeu = my_font.render("GAME OVER!", 0, config.VERMELHO)  # ("texto, opaco/transparente 0/1, cor do texto)
 
     # init()
 
@@ -62,10 +64,10 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 # se clicar na seta da esquerda, anda 3 para a esquerda no eixo x
                 if event.key == self.ESQUERDA:
-                    self.mudar_x = -3
+                    self.mudar_x = -config.VEL_PLAYER
                 # se clicar na seta da direita, anda 3 para a direita no eixo x
                 if event.key == self.DIREITA:
-                    self.mudar_x = 3
+                    self.mudar_x = config.VEL_PLAYER
 
             # se soltar qualquer tecla, não faz nada
             if event.type == pygame.KEYUP:
@@ -108,11 +110,11 @@ class Game:
 
     # Informa a quantidade de hazard que passaram e a Pontuação
     def score_card(self, screen, h_passou, score):
-        font = pygame.font.SysFont(None, 35)
-        passou = font.render("Passou: " + str(h_passou), True, (255, 255, 128))
-        score = font.render("Score: " + str(score), True, (253, 231, 32))
-        screen.blit(passou, (0, 50))
-        screen.blit(score, (0, 100))
+        font = pygame.font.SysFont(None, config.TAM_FONTE_PLACAR)
+        passou = font.render("Passou: " + str(h_passou), True, config.AMARELO_PASSOU)
+        score = font.render("Score: " + str(score), True, config.AMARELO_SCORE)
+        screen.blit(passou, config.POS_TEXTO_PASSOU)
+        screen.blit(score, config.POS_TEXTO_SCORE)
     #score_card()
 
     def loop(self):
@@ -123,25 +125,25 @@ class Game:
         h_passou = 0
 
         # variáveis para movimento de Plano de Fundo/Background
-        velocidade_background = 5
-        velocidade_hazard = 7
+        velocidade_background = config.VEL_FUNDO
+        velocidade_hazard = config.VEL_HAZARD
 
         faixaA_x = 375
         faixaA_y = 0
         hzrd = 0
-        h_x = random.randrange(125, 660)
-        h_y = -500
+        h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX)
+        h_y = config.HAZARD_Y_INICIAL
 
         # Info Hazard
-        h_width = 130 #55
-        h_height = 130 #120
+        h_width = config.TAM_HAZARD  #55
+        h_height = config.TAM_HAZARD #120
 
         # movimento da margem esquerda
         movL_x = 0
         movL_y = 0
 
         # movimento da margem direita
-        movR_x = 740
+        movR_x = config.POS_MARGEM_DIR_X
         movR_y = 0
 
         # Criar o Plano de fundo
@@ -155,19 +157,19 @@ class Game:
         self.player = Player(x, y)
 
         # Criar Harzard_1
-        self.hazard_1 = Hazard("Images/nave.png", h_x, h_y)
+        self.hazard_1 = Hazard(config.IMAGENS_HAZARD[0], h_x, h_y)
 
         # Criar Harzard_2
-        self.hazard_2 = Hazard("Images/satelite.png", h_x, h_y)
+        self.hazard_2 = Hazard(config.IMAGENS_HAZARD[1], h_x, h_y)
 
         # Criar Harzard_3
-        self.hazard_3 = Hazard("Images/cometa.png", h_x, h_y)
+        self.hazard_3 = Hazard(config.IMAGENS_HAZARD[2], h_x, h_y)
 
         # Criar Harzard_4
-        self.hazard_4 = Hazard("Images/planeta.png", h_x, h_y)
+        self.hazard_4 = Hazard(config.IMAGENS_HAZARD[3], h_x, h_y)
 
         # Criar Harzard_5
-        self.hazard_5 = Hazard("Images/ameaca.png", h_x, h_y)
+        self.hazard_5 = Hazard(config.IMAGENS_HAZARD[4], h_x, h_y)
 
         # Inicializamos o relogio e o dt que vai limitar o valor de FPS
         # frames por segundo do jogo
@@ -194,9 +196,9 @@ class Game:
             movR_y = movR_y + velocidade_background
 
             #se a imagem ultrapassar a extremidade da tela, move de volta
-            if movL_y > 640 and movR_y > 640:
-                movL_y -= 640
-                movR_y -= 640
+            if movL_y > config.LIMITE_REINICIO_FUNDO and movR_y > config.LIMITE_REINICIO_FUNDO:
+                movL_y -= config.LIMITE_REINICIO_FUNDO
+                movR_y -= config.LIMITE_REINICIO_FUNDO
 
             # Altera a coordenada x do Player de acordo comas mudanças no event_handle() para ele se mover
             x = x + self.mudar_x
@@ -209,8 +211,8 @@ class Game:
 
             # Restrições do movimento do Player
             # Se o Player bate na lateral não é Game Over
-            if x > 760 - 92 or x < 40 + 5:
-                self.screen.blit(self.render_text_bateulateral, (80, 200))
+            if x > config.LIMITE_PLAYER_DIR or x < config.LIMITE_PLAYER_ESQ:
+                self.screen.blit(self.render_text_bateulateral, config.POS_MENSAGEM)
                 pygame.display.update()  # atualizar a tela
                 time.sleep(3)
                 self.loop()
@@ -225,17 +227,17 @@ class Game:
             if h_y > self.height:
                 h_y = 0 - h_height
                 faixaA_y = 0
-                h_x = random.randrange(125, 650 - h_height)
+                h_x = random.randrange(config.SPAWN_MIN, 650 - h_height)
                 hzrd = random.randint(0, 4)
                 # determinando quantos hazard passaram e a pontuação
                 h_passou = h_passou + 1
-                score = h_passou * 10
+                score = h_passou * config.PONTOS_POR_HAZARD
 
             # restrições para o game over
             if y < h_y + h_height:
                 if x > h_x or x > h_x - 56:
                     if x < h_x + h_width or x < h_x - 56:
-                        self.screen.blit(self.render_text_perdeu, (80, 200))
+                        self.screen.blit(self.render_text_perdeu, config.POS_MENSAGEM)
                         pygame.display.update()
                         time.sleep(3)
                         self.run = False
