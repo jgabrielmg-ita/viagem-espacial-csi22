@@ -5,8 +5,8 @@ import time
 import config
 
 from background.background import Background
-from player import Player
-from hazard import Hazard
+from player_hazard.player import Player
+from player_hazard.hazard import Hazard
 
 
 class Game:
