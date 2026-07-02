@@ -1,6 +1,6 @@
 import pygame
 
-import config
+import config.config as config
 
 class Background:
     """
