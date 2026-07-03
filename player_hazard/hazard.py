@@ -4,11 +4,6 @@ import config.config as config
 
 
 class Hazard:
-
-    image = None
-    x = None
-    y = None
-
     def __init__(self, img, x, y):
         hazard_fig = pygame.image.load(img)
         hazard_fig.convert()

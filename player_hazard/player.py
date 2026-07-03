@@ -6,10 +6,6 @@ class Player:
     """
     Classe Jogador
     """
-    image = None
-    x = None
-    y = None
-
     def __init__(self, x, y):
         player_fig = pygame.image.load(config.IMG_PLAYER)
         player_fig.convert()
