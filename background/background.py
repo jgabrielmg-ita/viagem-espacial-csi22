@@ -37,55 +37,26 @@ class Background:
         screen.blit(self.margin_right, (config.POS_MARGEM_DIR_X, 0))
     # draw()
 
+    def _desenhar_coluna(self, screen, image, x, y):
+        passo = config.ALTURA_BLOCO_FUNDO        # altura de um bloco (o "passo")
+        pos = y
+        while pos > 0 :                          # sobe até 'pos' cobrir/passar o topo
+            pos -= passo
+        while pos < config.ALTURA_TELA:        # desce cobrindo até a base da tela
+            screen.blit(image, (x, pos))
+            pos += passo
+    # _desenhar_coluna()
+
     # Define posições do Plano de Fundo para criar o movimento
     def move (self, screen, movL_x, movL_y, movR_x, movR_y):
 
         #movimento background
-        screen.blit(self.image, (movL_x, movL_y))
-        screen.blit(self.image, (movL_x, movL_y + config.ALTURA_BLOCO_FUNDO))
-        screen.blit(self.image, (movL_x, movL_y + 1200))
-        screen.blit(self.image, (movL_x, movL_y + 1800))
-        screen.blit(self.image, (movL_x, movL_y + 2400))
-        screen.blit(self.image, (movL_x, movL_y + 3000))
-        screen.blit(self.image, (movL_x, movL_y - config.ALTURA_BLOCO_FUNDO))
-        screen.blit(self.image, (movL_x, movL_y - 1200))
-        screen.blit(self.image, (movL_x, movL_y - 1800))
-        screen.blit(self.image, (movL_x, movL_y - 2400))
-        screen.blit(self.image, (movL_x, movL_y - 3000))
-        screen.blit(self.image, (movL_x, movL_y - 3600))
-        screen.blit(self.image, (movL_x, movL_y - 4200))
-        screen.blit(self.image, (movL_x, movL_y - 4800))
+        self._desenhar_coluna(screen, self.image, movL_x, movL_y)
 
         # movimento margem esquerda
-        screen.blit(self.margin_left, (movL_x, movL_y))
-        screen.blit(self.margin_left, (movL_x, movL_y + config.ALTURA_BLOCO_FUNDO))
-        screen.blit(self.margin_left, (movL_x, movL_y + 1200))
-        screen.blit(self.margin_left, (movL_x, movL_y + 1800))
-        screen.blit(self.margin_left, (movL_x, movL_y + 2400))
-        screen.blit(self.margin_left, (movL_x, movL_y + 3000))
-        screen.blit(self.margin_left, (movL_x, movL_y - config.ALTURA_BLOCO_FUNDO))
-        screen.blit(self.margin_left, (movL_x, movL_y - 1200))
-        screen.blit(self.margin_left, (movL_x, movL_y - 1800))
-        screen.blit(self.margin_left, (movL_x, movL_y - 2400))
-        screen.blit(self.margin_left, (movL_x, movL_y - 3000))
-        screen.blit(self.margin_left, (movL_x, movL_y - 3600))
-        screen.blit(self.margin_left, (movL_x, movL_y - 4200))
-        screen.blit(self.margin_left, (movL_x, movL_y - 4800))
+        self._desenhar_coluna(screen, self.margin_left, movL_x, movL_y)
 
         # movimento margem direita
-        screen.blit(self.margin_right, (movR_x, movR_y))
-        screen.blit(self.margin_right, (movR_x, movR_y + config.ALTURA_BLOCO_FUNDO))
-        screen.blit(self.margin_right, (movR_x, movR_y + 1200))
-        screen.blit(self.margin_right, (movR_x, movR_y + 1800))
-        screen.blit(self.margin_right, (movR_x, movR_y + 2400))
-        screen.blit(self.margin_right, (movR_x, movR_y + 3000))
-        screen.blit(self.margin_right, (movR_x, movR_y - config.ALTURA_BLOCO_FUNDO))
-        screen.blit(self.margin_right, (movR_x, movR_y - 1200))
-        screen.blit(self.margin_right, (movR_x, movR_y - 1800))
-        screen.blit(self.margin_right, (movR_x, movR_y - 2400))
-        screen.blit(self.margin_right, (movR_x, movR_y - 3000))
-        screen.blit(self.margin_right, (movR_x, movR_y - 3600))
-        screen.blit(self.margin_right, (movR_x, movR_y - 4200))
-        screen.blit(self.margin_right, (movR_x, movR_y - 4800))
+        self._desenhar_coluna(screen, self.margin_right, movR_x, movR_y)
     # move()
 # Background:
