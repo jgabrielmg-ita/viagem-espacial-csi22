@@ -17,7 +17,7 @@ class Background:
         margin_left_fig = pygame.transform.scale(margin_left_fig, (config.LARGURA_MARGEM, config.ALTURA_MARGEM))
         self.margin_left = margin_left_fig
 
-        margin_right_fig = pygame.image.load("Images/margin_2.png")
+        margin_right_fig = pygame.image.load(config.IMG_MARGEM_DIR)
         margin_right_fig.convert()
         margin_right_fig = pygame.transform.scale(margin_right_fig, (config.LARGURA_MARGEM, config.ALTURA_MARGEM))
         self.margin_right = margin_right_fig
