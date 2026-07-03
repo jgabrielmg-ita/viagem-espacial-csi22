@@ -6,7 +6,7 @@ import config.config as config
 
 from background.background import Background
 from player_hazard.player import Player
-from player_hazard.hazard import Hazard
+from player_hazard.hazard import criar_hazard
 
 
 class Game:
@@ -17,7 +17,7 @@ class Game:
     run = True
     background = None
     player = None
-    hazard_1 = hazard_2 = hazard_3 = hazard_4 = hazard_5 = None
+    hazard = None
     render_text_bateulateral = None
     render_text_perdeu = None
 
@@ -25,7 +25,6 @@ class Game:
     DIREITA = pygame.K_RIGHT
     ESQUERDA = pygame.K_LEFT
     mudar_x = 0.0
-
 
     def __init__(self, size, fullscreen):
 
@@ -74,40 +73,15 @@ class Game:
                 if event.key == self.ESQUERDA or event.key == self.DIREITA:
                     self.mudar_x = 0
 
-    # handle_events()
-
     def elements_update(self, dt):
         self.background.update(dt)
-    # elements_update()
-
+    
     def elements_draw(self):
         self.background.draw(self.screen)
-    # elements_draw()
-
-    # Desenha o Player
-    def draw_player (self, x, y):
-        self.player.draw (self.screen, x, y)
-    # draw_player()
-
-    # Desenha Hazard
-    def draw_hazard (self, hzrd, x, y):
-        if hzrd == 0:
-            self.hazard_1.draw(self.screen, x, y)
-        elif hzrd == 1:
-            self.hazard_2.draw(self.screen, x, y)
-        elif hzrd == 2:
-            self.hazard_3.draw(self.screen, x, y)
-        elif hzrd == 3:
-            self.hazard_4.draw(self.screen, x, y)
-        elif hzrd == 4:
-            self.hazard_5.draw(self.screen, x, y)
-    # draw_hazard()
-
-    # Define as posições dos objetos para criar o movimento
-    def move_background (self, obj_movL_x, obj_movL_y, obj_movR_x, obj_movR_y):
-        self.background.move (self.screen, obj_movL_x, obj_movL_y, obj_movR_x,obj_movR_y)
-    # move_background()
-
+    
+    def _houver_colisao(self, player, hazard):
+        return player.get_rect().colliderect(hazard.get_rect())
+    
     # Informa a quantidade de hazard que passaram e a Pontuação
     def score_card(self, screen, h_passou, score):
         font = pygame.font.SysFont(None, config.TAM_FONTE_PLACAR)
@@ -128,48 +102,19 @@ class Game:
         velocidade_background = config.VEL_FUNDO
         velocidade_hazard = config.VEL_HAZARD
 
-        faixaA_x = 375
-        faixaA_y = 0
         hzrd = 0
         h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX)
         h_y = config.HAZARD_Y_INICIAL
 
-        # Info Hazard
-        h_width = config.TAM_HAZARD  #55
-        h_height = config.TAM_HAZARD #120
-
-        # movimento da margem esquerda
-        movL_x = 0
-        movL_y = 0
-
-        # movimento da margem direita
-        movR_x = config.POS_MARGEM_DIR_X
-        movR_y = 0
-
+        deslocamento = pygame.math.Vector2(0, 0)
         # Criar o Plano de fundo
         self.background = Background()
 
-        # Posicao do Player
-        x = (self.width - 56) / 2
-        y = self.height - 125
-
         # Criar o Player
-        self.player = Player(x, y)
+        self.player = Player((self.width - 56) / 2, self.height - 125)
 
         # Criar Harzard_1
-        self.hazard_1 = Hazard(config.IMAGENS_HAZARD[0], h_x, h_y)
-
-        # Criar Harzard_2
-        self.hazard_2 = Hazard(config.IMAGENS_HAZARD[1], h_x, h_y)
-
-        # Criar Harzard_3
-        self.hazard_3 = Hazard(config.IMAGENS_HAZARD[2], h_x, h_y)
-
-        # Criar Harzard_4
-        self.hazard_4 = Hazard(config.IMAGENS_HAZARD[3], h_x, h_y)
-
-        # Criar Harzard_5
-        self.hazard_5 = Hazard(config.IMAGENS_HAZARD[4], h_x, h_y)
+        self.hazard = criar_hazard(hzrd, h_x, config.HAZARD_Y_INICIAL)
 
         # Inicializamos o relogio e o dt que vai limitar o valor de FPS
         # frames por segundo do jogo
@@ -189,54 +134,48 @@ class Game:
             # Desenha o background buffer
             self.elements_draw()
 
-            # adiciona movimento ao background
-
-            self.move_background (movL_x, movL_y, movR_x, movR_y)
-            movL_y = movL_y + velocidade_background
-            movR_y = movR_y + velocidade_background
+            # Adiciona movimento ao background
+            self.background.mover(self.screen, deslocamento)
+            deslocamento.y = deslocamento.y + velocidade_background
 
             #se a imagem ultrapassar a extremidade da tela, move de volta
-            if movL_y > config.LIMITE_REINICIO_FUNDO and movR_y > config.LIMITE_REINICIO_FUNDO:
-                movL_y -= config.LIMITE_REINICIO_FUNDO
-                movR_y -= config.LIMITE_REINICIO_FUNDO
+            if deslocamento.y > config.LIMITE_REINICIO_FUNDO:
+                deslocamento.y = deslocamento.y - config.LIMITE_REINICIO_FUNDO
 
             # Altera a coordenada x do Player de acordo comas mudanças no event_handle() para ele se mover
-            x = x + self.mudar_x
+            self.player.x = self.player.x + self.mudar_x
 
             # Mostrar Player
-            self.draw_player (x, y)
+            self.player.desenhar(self.screen)
 
             # Mostrar score
             self.score_card(self.screen, h_passou, score)
 
             # Restrições do movimento do Player
             # Se o Player bate na lateral não é Game Over
-            if x > config.LIMITE_PLAYER_DIR or x < config.LIMITE_PLAYER_ESQ:
+            if self.player.x > config.LIMITE_PLAYER_DIR or self.player.x < config.LIMITE_PLAYER_ESQ:
                 self.screen.blit(self.render_text_bateulateral, config.POS_MENSAGEM)
-                pygame.display.update()  # atualizar a tela
+                pygame.display.update()  
                 time.sleep(3)
                 self.loop()
                 self.run = False
 
             # adicionando movimento ao hazard
-            h_y = h_y + velocidade_hazard / 4
-            self.draw_hazard(hzrd, h_x, h_y)
-            h_y = h_y + velocidade_hazard
+            self.hazard.y = self.hazard.y + (velocidade_hazard / 4)
+            self.hazard.desenhar(self.screen)
+            self.hazard.y = self.hazard.y + velocidade_hazard
 
             # definindo onde hazard vai aparecer, recomeçando a posição do obstaculo e da faixa
-            if h_y > self.height:
-                h_y = 0 - h_height
-                faixaA_y = 0
-                h_x = random.randrange(config.SPAWN_MIN, 650 - h_height)
+            if self.hazard.y > self.height:
+                h_x = random.randrange(config.SPAWN_MIN, 650 - config.TAM_HAZARD)
                 hzrd = random.randint(0, 4)
+                self.hazard = criar_hazard(hzrd, h_x, 0 - config.TAM_HAZARD)
                 # determinando quantos hazard passaram e a pontuação
                 h_passou = h_passou + 1
                 score = h_passou * config.PONTOS_POR_HAZARD
 
             # restrições para o game over
-            if y < h_y + h_height:
-                if x > h_x or x > h_x - 56:
-                    if x < h_x + h_width or x < h_x - 56:
+            if self._houver_colisao(self.player, self.hazard):
                         self.screen.blit(self.render_text_perdeu, config.POS_MENSAGEM)
                         pygame.display.update()
                         time.sleep(3)
@@ -245,7 +184,3 @@ class Game:
             # atualizando a tela
             pygame.display.update()
             clock.tick(2000)
-
-        # while self.run
-    # loop()
-# Game:

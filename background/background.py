@@ -44,15 +44,15 @@ class Background:
     # _desenhar_coluna()
 
     # Define posições do Plano de Fundo para criar o movimento
-    def move (self, screen, movL_x, movL_y, movR_x, movR_y):
+    def mover (self, screen, deslocamento):
 
         #movimento background
-        self._desenhar_coluna(screen, self.image, movL_x, movL_y)
+        self._desenhar_coluna(screen, self.image, 0, deslocamento.y)
 
         # movimento margem esquerda
-        self._desenhar_coluna(screen, self.margin_left, movL_x, movL_y)
+        self._desenhar_coluna(screen, self.margin_left, 0, deslocamento.y)
 
         # movimento margem direita
-        self._desenhar_coluna(screen, self.margin_right, movR_x, movR_y)
+        self._desenhar_coluna(screen, self.margin_right, config.POS_MARGEM_DIR_X, deslocamento.y)
     # move()
 # Background:

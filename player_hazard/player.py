@@ -13,10 +13,13 @@ class Player:
         self.image = player_fig
         self.x = x
         self.y = y
-    # __init__()
 
-    # Desenhar Player
-    def draw (self, screen, x, y):
-        screen.blit(self.image, (x, y))
-    #draw()
+    # Desenhar o Player
+    def desenhar(self, screen):
+        screen.blit(self.image, (self.x, self.y))
+    
+    # Retorna a posicao do Player
+    def get_rect(self):
+        return self.image.get_rect(topleft=(self.x, self.y))
+
 # Player:
