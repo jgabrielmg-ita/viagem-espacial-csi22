@@ -104,7 +104,6 @@ class Game:
 
         hzrd = 0
         h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX)
-        h_y = config.HAZARD_Y_INICIAL
 
         deslocamento = pygame.math.Vector2(0, 0)
         # Criar o Plano de fundo
@@ -176,10 +175,10 @@ class Game:
 
             # restrições para o game over
             if self._houver_colisao(self.player, self.hazard):
-                        self.screen.blit(self.render_text_perdeu, config.POS_MENSAGEM)
-                        pygame.display.update()
-                        time.sleep(3)
-                        self.run = False
+                self.screen.blit(self.render_text_perdeu, config.POS_MENSAGEM)
+                pygame.display.update()
+                time.sleep(3)
+                self.run = False
 
             # atualizando a tela
             pygame.display.update()
