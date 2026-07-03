@@ -63,7 +63,7 @@ class Game:
     def elements_draw(self):
         self.background.draw(self.tela.screen)
     
-    def _houver_colisao(self, player, hazard):
+    def _houve_colisao(self, player, hazard):
         return player.get_rect().colliderect(hazard.get_rect())
     
     def loop(self):
@@ -149,7 +149,7 @@ class Game:
                 self.placar.adicionar_ponto()
 
             # restrições para o game over
-            if self._houver_colisao(self.player, self.hazard):
+            if self._houve_colisao(self.player, self.hazard):
                 self.tela.desenhar_mensagem(self.tela.msg_game_over)
                 self.tela.atualizar()
                 time.sleep(3)
