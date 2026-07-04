@@ -6,6 +6,8 @@ FPS = 30
 
 TAM_PLAYER = 90 
 VEL_PLAYER = 3 
+DESLOC_CENTRO_PLAYER = 56 # usado pra centralizar a nave (largura do sprite)
+OFFSET_PLAYER_Y = 125 # distância da nave até a base da tela
 
 LIMITE_PLAYER_ESQ = 45
 LIMITE_PLAYER_DIR = 668
@@ -13,6 +15,7 @@ LIMITE_PLAYER_DIR = 668
 TAM_HAZARD = 130 
 VEL_HAZARD = 7             
 HAZARD_Y_INICIAL = -500    
+SPAWN_MAX_RESPAWN = 650 - TAM_HAZARD # intervalo de respawn do hazard 
 SPAWN_MIN = 125            
 SPAWN_MAX = 660         
 

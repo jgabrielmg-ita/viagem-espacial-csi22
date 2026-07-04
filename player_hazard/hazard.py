@@ -13,6 +13,10 @@ class Hazard:
         self.y = y
     # __init__()
 
+    def cair(self):
+        # velocidade efetiva 
+        self.y = self.y + config.VEL_HAZARD + config.VEL_HAZARD / 4
+
     # Desenhar Hazard
     def desenhar (self, screen):
         screen.blit(self.image, (self.x, self.y))

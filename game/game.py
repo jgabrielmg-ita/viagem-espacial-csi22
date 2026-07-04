@@ -57,42 +57,31 @@ class Game:
                 if event.key == self.ESQUERDA or event.key == self.DIREITA:
                     self.mudar_x = 0
     
-    def elements_draw(self):
-        self.background.draw(self.tela.screen)
-    
     def _houve_colisao(self, player, hazard):
         return player.get_rect().colliderect(hazard.get_rect())
     
     def _inicializar_jogo(self):
-        self.deslocamento = pygame.math.Vector2(0, 0)
-        self.hzrd = 0
-        h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX)
         self.background = Background()
-        self.player = Player((self.width - 56) / 2, self.height - 125)
-        self.hazard = criar_hazard(self.hzrd, h_x, config.HAZARD_Y_INICIAL)
+        self.player = Player()
         self.placar = Placar()
+        h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX)
+        self.hazard = criar_hazard(0, h_x, config.HAZARD_Y_INICIAL)
 
-    def _atualizar(self, dt):
-        self.background.update(dt)
+    def _atualizar(self):
+        self.background.rolar()
+        self.player.mover(self.mudar_x)
+        self.hazard.cair()
 
-        self.deslocamento.y = self.deslocamento.y + config.VEL_FUNDO
-        if self.deslocamento.y > config.LIMITE_REINICIO_FUNDO:
-            self.deslocamento.y = self.deslocamento.y - config.LIMITE_REINICIO_FUNDO
 
-        
-        self.player.x = self.player.x + self.mudar_x
-
-        self.hazard.y = self.hazard.y + (config.VEL_HAZARD / 4)
-        self.hazard.y = self.hazard.y + config.VEL_HAZARD
         if self.hazard.y > self.height:
-            h_x = random.randrange(config.SPAWN_MIN, 650 - config.TAM_HAZARD)
-            self.hzrd = random.randint(0, 4)
-            self.hazard = criar_hazard(self.hzrd, h_x, 0 - config.TAM_HAZARD)
+            h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX_RESPAWN)
+            tipo = random.randint(0, len(config.IMAGENS_HAZARD) - 1)
+            self.hazard = criar_hazard(tipo, h_x, 0 - config.TAM_HAZARD)
             self.placar.adicionar_ponto()
 
     def _renderizar(self):
-        self.elements_draw()
-        self.background.mover(self.tela.screen, self.deslocamento)
+        self.background.draw(self.tela.screen)
+        self.background.mover(self.tela.screen)
         self.player.desenhar(self.tela.screen)
         self.placar.desenhar(self.tela.screen)
         self.hazard.desenhar(self.tela.screen)
@@ -135,9 +124,9 @@ class Game:
         self._inicializar_jogo()
         clock = pygame.time.Clock()
         while self.run:
-            dt = clock.tick(config.FPS)
+            clock.tick(config.FPS)
             self.handle_events()
-            self._atualizar(dt)
+            self._atualizar()
             self._renderizar()
             self._detectar_colisoes()
    
