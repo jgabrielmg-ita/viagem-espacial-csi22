@@ -56,9 +56,6 @@ class Game:
             if event.type == pygame.KEYUP:
                 if event.key == self.ESQUERDA or event.key == self.DIREITA:
                     self.mudar_x = 0
-
-    def elements_update(self, dt):
-        self.background.update(dt)
     
     def elements_draw(self):
         self.background.draw(self.tela.screen)
@@ -66,94 +63,81 @@ class Game:
     def _houve_colisao(self, player, hazard):
         return player.get_rect().colliderect(hazard.get_rect())
     
-    def loop(self):
-        """
-        Laço principal
-        """
-
-        # variáveis para movimento de Plano de Fundo/Background
-        velocidade_background = config.VEL_FUNDO
-        velocidade_hazard = config.VEL_HAZARD
-
-        hzrd = 0
+    def _inicializar_jogo(self):
+        self.deslocamento = pygame.math.Vector2(0, 0)
+        self.hzrd = 0
         h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX)
-        deslocamento = pygame.math.Vector2(0, 0)
-
-        # Criar o Plano de fundo
         self.background = Background()
-
-        # Criar o Player
         self.player = Player((self.width - 56) / 2, self.height - 125)
-
-        # Criar Harzard
-        self.hazard = criar_hazard(hzrd, h_x, config.HAZARD_Y_INICIAL)
-
-        # Criar Placar
+        self.hazard = criar_hazard(self.hzrd, h_x, config.HAZARD_Y_INICIAL)
         self.placar = Placar()
 
-        # Inicializamos o relogio e o dt que vai limitar o valor de FPS
-        # frames por segundo do jogo
-        clock = pygame.time.Clock()
+    def _atualizar(self, dt):
+        self.background.update(dt)
 
-        # assim iniciamos o loop principal do programa
-        while self.run:
+        self.deslocamento.y = self.deslocamento.y + config.VEL_FUNDO
+        if self.deslocamento.y > config.LIMITE_REINICIO_FUNDO:
+            self.deslocamento.y = self.deslocamento.y - config.LIMITE_REINICIO_FUNDO
 
-            dt = clock.tick(config.FPS)
+        
+        self.player.x = self.player.x + self.mudar_x
 
-            # Handle Input Events
-            self.handle_events()
+        self.hazard.y = self.hazard.y + (config.VEL_HAZARD / 4)
+        self.hazard.y = self.hazard.y + config.VEL_HAZARD
+        if self.hazard.y > self.height:
+            h_x = random.randrange(config.SPAWN_MIN, 650 - config.TAM_HAZARD)
+            self.hzrd = random.randint(0, 4)
+            self.hazard = criar_hazard(self.hzrd, h_x, 0 - config.TAM_HAZARD)
+            self.placar.adicionar_ponto()
 
-            # Atualiza Elementos
-            self.elements_update(dt)
+    def _renderizar(self):
+        self.elements_draw()
+        self.background.mover(self.tela.screen, self.deslocamento)
+        self.player.desenhar(self.tela.screen)
+        self.placar.desenhar(self.tela.screen)
+        self.hazard.desenhar(self.tela.screen)
+        self.tela.atualizar()
+    
 
-            # Desenha o background buffer
-            self.elements_draw()
-
-            # Adiciona movimento ao background
-            self.background.mover(self.tela.screen, deslocamento)
-            deslocamento.y = deslocamento.y + velocidade_background
-
-            #se a imagem ultrapassar a extremidade da tela, move de volta
-            if deslocamento.y > config.LIMITE_REINICIO_FUNDO:
-                deslocamento.y = deslocamento.y - config.LIMITE_REINICIO_FUNDO
-
-            # Altera a coordenada x do Player de acordo comas mudanças no event_handle() para ele se mover
-            self.player.x = self.player.x + self.mudar_x
-
-            # Mostrar Player
-            self.player.desenhar(self.tela.screen)
-
-            # Mostrar Placar
-            self.placar.desenhar(self.tela.screen)
-
-            # Restrições do movimento do Player
-            # Se o Player bate na lateral não é Game Over
-            if self.player.x > config.LIMITE_PLAYER_DIR or self.player.x < config.LIMITE_PLAYER_ESQ:
-                self.tela.desenhar_mensagem(self.tela.msg_colisao)
-                self.tela.atualizar()
-                time.sleep(3)
-                self.loop()
-                self.run = False
-
-            # adicionando movimento ao hazard
-            self.hazard.y = self.hazard.y + (velocidade_hazard / 4)
-            self.hazard.desenhar(self.tela.screen)
-            self.hazard.y = self.hazard.y + velocidade_hazard
-
-            # definindo onde hazard vai aparecer, recomeçando a posição do obstaculo e da faixa
-            if self.hazard.y > self.height:
-                h_x = random.randrange(config.SPAWN_MIN, 650 - config.TAM_HAZARD)
-                hzrd = random.randint(0, 4)
-                self.hazard = criar_hazard(hzrd, h_x, 0 - config.TAM_HAZARD)
-                # determinando quantos hazard passaram e a pontuação
-                self.placar.adicionar_ponto()
-
-            # restrições para o game over
-            if self._houve_colisao(self.player, self.hazard):
-                self.tela.desenhar_mensagem(self.tela.msg_game_over)
-                self.tela.atualizar()
-                time.sleep(3)
-                self.run = False
-
-            # atualizando a tela
+    def _detectar_colisoes(self):
+        # Bater na lateral NÃO é fim de jogo: reaparece longe do hazard e continua
+        if self.player.x > config.LIMITE_PLAYER_DIR or self.player.x < config.LIMITE_PLAYER_ESQ:
+            self.tela.desenhar_mensagem(self.tela.msg_colisao)
             self.tela.atualizar()
+            time.sleep(3)
+
+            # coloca a nave no lado oposto ao hazard
+            if self.hazard.x > self.width / 2:
+                novo_x = self.hazard.x - self.width / 2
+            else:
+                novo_x = self.hazard.x + self.width / 2
+
+            if novo_x < config.LIMITE_PLAYER_ESQ:
+                novo_x = config.LIMITE_PLAYER_ESQ
+            if novo_x > config.LIMITE_PLAYER_DIR:
+                novo_x = config.LIMITE_PLAYER_DIR
+
+            self.player.x = novo_x
+            self.mudar_x = 0
+
+        # bater no hazard É fim de jogo
+        if self._houve_colisao(self.player, self.hazard):
+            self._tratar_fim_de_jogo(self.tela.msg_game_over)
+    # _detectar_colisoes()
+
+    def _tratar_fim_de_jogo(self, mensagem):
+        self.tela.desenhar_mensagem(mensagem)
+        self.tela.atualizar()
+        time.sleep(3)
+        self.run = False
+
+    def loop(self):
+        self._inicializar_jogo()
+        clock = pygame.time.Clock()
+        while self.run:
+            dt = clock.tick(config.FPS)
+            self.handle_events()
+            self._atualizar(dt)
+            self._renderizar()
+            self._detectar_colisoes()
+   
