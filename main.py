@@ -1,11 +1,10 @@
 from game.game import Game
 
+# ponto de entrada do jogo
 def main():
-    # Cria o objeto game e chama o loop básico
+    # Cria o objeto game e chama o loop 
     game = Game()
     game.loop()
-# main()
 
-# Chama a função main
 if __name__ == '__main__':
     main()
