@@ -21,6 +21,7 @@ class Placar:
         screen.blit(passou, config.POS_TEXTO_PASSOU)
         screen.blit(score, config.POS_TEXTO_SCORE)  
         
+    # reseta os pontos após colidir com asteroides
     def reset(self):
         self.h_passou = -1
         self.score = 0
