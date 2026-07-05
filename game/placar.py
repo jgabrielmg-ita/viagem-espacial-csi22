@@ -20,5 +20,9 @@ class Placar:
         score = font.render("Score: " + str(self.score), True, config.AMARELO_SCORE)
         screen.blit(passou, config.POS_TEXTO_PASSOU)
         screen.blit(score, config.POS_TEXTO_SCORE)  
+        
+    def reset(self):
+        self.h_passou = -1
+        self.score = 0
 
          

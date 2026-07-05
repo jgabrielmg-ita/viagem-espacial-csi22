@@ -59,7 +59,8 @@ class Game:
     
     #verifica a sobreposição do player e do hazard
     def _houve_colisao(self, player, hazard):
-        return player.get_rect().colliderect(hazard.get_rect())
+        if hazard:
+            return player.get_rect().colliderect(hazard.get_rect())
     
     # cria os objetos da partida
     def _inicializar_jogo(self):
@@ -74,10 +75,11 @@ class Game:
     def _atualizar(self):
         self.background.rolar()
         self.player.mover(self.mudar_x)
-        self.hazard.cair()
+        if self.hazard:
+            self.hazard.cair()
 
         # quando o obstáculo sai da tela, cria outro no topo e o player pontua
-        if self.hazard.y > self.height:
+        if self.hazard == None or self.hazard.y > self.height:
             h_x = random.randrange(config.SPAWN_MIN, config.SPAWN_MAX_RESPAWN)
             tipo = random.randint(0, len(config.IMAGENS_HAZARD) - 1)
             self.hazard = criar_hazard(tipo, h_x, 0 - config.TAM_HAZARD)
@@ -99,21 +101,11 @@ class Game:
             self.tela.desenhar_mensagem(self.tela.msg_colisao)
             self.tela.atualizar()
             time.sleep(3)
-
-            # coloca a nave no lado oposto ao hazard
-            if self.hazard.x > self.width / 2:
-                novo_x = self.hazard.x - self.width / 2
-            else:
-                novo_x = self.hazard.x + self.width / 2
-
-            # garante que o player fique na área permitida
-            if novo_x < config.LIMITE_PLAYER_ESQ:
-                novo_x = config.LIMITE_PLAYER_ESQ
-            if novo_x > config.LIMITE_PLAYER_DIR:
-                novo_x = config.LIMITE_PLAYER_DIR
-
-            self.player.x = novo_x
+            #hazard some, player é centralizado novamente na tela e os pontos são resetados
+            self.hazard = None
+            self.player.x = self.player.x_central()
             self.mudar_x = 0
+            self.placar.reset()
 
         # bater no hazard É fim de jogo
         if self._houve_colisao(self.player, self.hazard):
